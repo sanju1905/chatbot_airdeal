@@ -3,43 +3,79 @@ import { Segment } from "semantic-ui-react";
 import ChatBot from "react-simple-chatbot";
 import axios from "axios";
 
+
+
 const App = () => {
   const [user, setUser] = useState(null);
 
+
+
+  //confirm the details
+  const ConfirmDetailsComponent = ({ steps }) => {
+    console.log("ConfirmDetailsComponent steps:", steps); // Add logging
+  
+    const hearAboutUs = steps["hear-about-us"]?.value || "N/A";
+    const flyingSolution = steps["flying-solution-options"]?.value || "N/A";
+    const departureAirport = steps["departure-airport-input"]?.value || "N/A";
+    const destinationAirport = steps["destination-airport-input"]?.value || "N/A";
+    const journeyType = steps["journey-type-options"]?.value || "N/A";
+    const dateOfJourney = steps["date-of-journey-input"]?.value || "N/A";
+    const numberOfPassengers = steps["number-of-passengers-input"]?.value || "N/A";
+  
+    const details = [
+      `How did you hear about us: ${hearAboutUs}`,
+      `Current flying solution: ${flyingSolution}`,
+      `Departure airport: ${departureAirport}`,
+      `Destination airport: ${destinationAirport}`,
+      `Journey type: ${journeyType}`,
+      `Date of journey: ${dateOfJourney}`,
+      `Number of passengers: ${numberOfPassengers}`,
+    ];
+  
+    return (
+      <div>
+        {details.map((detail, index) => (
+          <p key={index}>{detail}</p>
+        ))}
+      </div>
+    );
+  };
+  
+
   const registerUser = async ({ name, email, password }) => {
     try {
-      const response = await axios.post('http://localhost:5001/register', {
+      const response = await axios.post("http://localhost:5001/register", {
         name,
         email,
         password,
       });
       setUser(response.data.user);
-      console.log('Registration successful', response.data);
+      console.log("Registration successful", response.data);
       return "RegistrationSuccess";
     } catch (error) {
-      console.error('Registration failed', error);
+      console.error("Registration failed", error);
       return "RegistrationFailed";
     }
   };
 
   const loginUser = async ({ email, password }) => {
     try {
-      const response = await axios.post('http://localhost:5001/login', {
+      const response = await axios.post("http://localhost:5001/login", {
         email,
         password,
       });
       setUser(response.data.user);
-      console.log('Login successful', response.data);
+      console.log("Login successful", response.data);
       return "LoginSuccess";
     } catch (error) {
-      console.error('Login failed', error);
+      console.error("Login failed", error);
       return "LoginFailed";
     }
   };
 
   const RegistrationComponent = ({ steps, triggerNextStep }) => {
     const { WaitingForName, WaitingForEmail, WaitingForPassword } = steps;
-    
+
     const handleRegistration = async () => {
       const result = await registerUser({
         name: WaitingForName.value,
@@ -93,6 +129,8 @@ const App = () => {
       message: "Do you have an account?",
       trigger: "ServiceOptions",
     },
+    // Service options start
+
     {
       id: "ServiceOptions",
       options: [
@@ -108,6 +146,9 @@ const App = () => {
         },
       ],
     },
+    // Service options end
+
+    // Options after login
     {
       id: "AskEmailForLogin",
       message: "Enter your Email:",
@@ -149,6 +190,9 @@ const App = () => {
       message: "Hi, what do you need help with?",
       trigger: "ServiceOptionsAfterLogin",
     },
+    // Login end
+
+    // Services start
     {
       id: "ServiceOptionsAfterLogin",
       options: [
@@ -158,27 +202,20 @@ const App = () => {
           trigger: "BookFlight",
         },
         {
-          value: "baggage",
-          label: "Baggage allowance",
-          trigger: "BaggageAllowance",
-        },
-        {
-          value: "flights",
-          label: "Available flights",
-          trigger: "AvailableFlights",
-        },
-        {
-          value: "flightDetails",
-          label: "Flight details",
-          trigger: "FlightDetails",
+          value: "chartered",
+          label: "Book a Chartered Flight",
+          trigger: "Chartered",
         },
         {
           value: "cheap flights",
-          label: "Cheap flights",
+          label: "Book your Cheap Flight",
           trigger: "AskCheapFlightDetails",
         },
       ],
     },
+    // Services end
+
+    // Register data start
     {
       id: "AskName",
       message: "Enter your Name:",
@@ -225,11 +262,14 @@ const App = () => {
       message: "Registration failed. Please try again.",
       trigger: "AskService",
     },
+    // Register data end
     {
       id: "AskServiceAfterRegister",
       message: "Hi, what do you need help with?",
       trigger: "ServiceOptionsAfterLogin",
     },
+
+    // Booking flight start
     {
       id: "BookFlight",
       message: "Enter your destination:",
@@ -245,48 +285,21 @@ const App = () => {
       message: "Booking a flight to {previousValue}. Please wait...",
       trigger: "BookingResponse",
     },
+
     {
       id: "BookingResponse",
       message: "Booking confirmed. Thank you!",
       asMessage: true,
-      trigger:"ServiceOptionsAfterLogin",
+      trigger: "ServiceOptionsAfterLogin",
     },
-    {
-      id: "BaggageAllowance",
-      message: "Fetching baggage allowance details. Please wait...",
-      trigger: "BaggageResponse",
-    },
-    {
-      id: "BaggageResponse",
-      message: "Baggage allowance details fetched.",
-      asMessage: true,
-      trigger:"ServiceOptionsAfterLogin"
-    },
-    {
-      id: "AvailableFlights",
-      message: "Fetching available flights. Please wait...",
-      trigger: "FlightsResponse",
-    },
-    {
-      id: "FlightsResponse",
-      message: "Available flights fetched.",
-      asMessage: true,
-      end: true,
-    },
-    {
-      id: "FlightDetails",
-      message: "Fetching flight details. Please wait...",
-      trigger: "FlightDetailsResponse",
-    },
-    {
-      id: "FlightDetailsResponse",
-      message: "Flight details fetched.",
-      asMessage: true,
-      end: true,
-    },
+
+    // Booking flight end
+
+    // Cheap flight start
     {
       id: "AskCheapFlightDetails",
-      message: "Please enter your departure and arrival destinations separated by a comma (e.g., Bengaluru, Chennai):",
+      message:
+        "Please enter your departure and arrival destinations separated by a comma (e.g., Bengaluru, Chennai):",
       trigger: "WaitingForCheapFlightDetails",
     },
     {
@@ -318,19 +331,167 @@ const App = () => {
         { value: "no", label: "No", trigger: "AskServiceAfterLogin" },
       ],
     },
+
+    // Cheap flight end
+
+    // Chartered Flights Data start
     {
-      id: "StartOver",
-      component: <StartOverComponent />,
-      end: true,
+      id: "Chartered",
+      message: "How did you hear about us?",
+      trigger: "hear-about-us",
     },
+    {
+      id: "hear-about-us",
+      options: [
+        {
+          value: "social_media",
+          label: "Social Media",
+          trigger: "current-flying-solution",
+        },
+        {
+          value: "recommendations",
+          label: "Recommendations",
+          trigger: "current-flying-solution",
+        },
+        {
+          value: "events",
+          label: "Events",
+          trigger: "current-flying-solution",
+        },
+        { value: "quora", label: "Quora", trigger: "current-flying-solution" },
+      ],
+    },
+    {
+      id: "current-flying-solution",
+      message: "What is your current flying solution?",
+      trigger: "flying-solution-options",
+    },
+    {
+      id: "flying-solution-options",
+      options: [
+        {
+          value: "private_jet",
+          label: "Private Jet Charter",
+          trigger: "departure-airport",
+        },
+        {
+          value: "group_charters",
+          label: "Group Charters",
+          trigger: "departure-airport",
+        },
+        {
+          value: "concierge_charters",
+          label: "Concierge Charters",
+          trigger: "departure-airport",
+        },
+        {
+          value: "air_ambulance",
+          label: "Air Ambulance",
+          trigger: "departure-airport",
+        },
+        {
+          value: "aircraft_sales",
+          label: "Aircraft Sales",
+          trigger: "departure-airport",
+        },
+      ],
+    },
+    {
+      id: "departure-airport",
+      message: "Please enter the departure airport.",
+      trigger: "departure-airport-input",
+    },
+    {
+      id: "departure-airport-input",
+      user: true,
+      trigger: "destination-airport",
+    },
+    {
+      id: "destination-airport",
+      message: "Please enter the destination airport.",
+      trigger: "destination-airport-input",
+    },
+    {
+      id: "destination-airport-input",
+      user: true,
+      trigger: "journey-type",
+    },
+    {
+      id: "journey-type",
+      message: "Is this a one-way or round trip?",
+      trigger: "journey-type-options",
+    },
+    {
+      id: "journey-type-options",
+      options: [
+        { value: "one_way", label: "One Way", trigger: "date-of-journey" },
+        {
+          value: "round_trip",
+          label: "Round Trip",
+          trigger: "date-of-journey",
+        },
+      ],
+    },
+    {
+      id: "date-of-journey",
+      message: "Please enter the date of the journey.",
+      trigger: "date-of-journey-input",
+    },
+    {
+      id: "date-of-journey-input",
+      user: true,
+      trigger: "number-of-passengers",
+    },
+    {
+      id: "number-of-passengers",
+      message: "Please enter the number of passengers.",
+      trigger: "number-of-passengers-input",
+    },
+    {
+      id: "number-of-passengers-input",
+      user: true,
+      trigger: "summary",
+    },
+    {
+      id: "summary",
+      message: "Please confirm your details.",
+      trigger: "confirm-details",
+    },
+    {
+      id: "confirm-details",
+      component: <ConfirmDetailsComponent />,
+      asMessage: true,
+      trigger: "confirm",
+    },
+    {
+      id: "confirm",
+      message: "Is everything correct?",
+      trigger: "confirm-options",
+    },
+    {
+      id: "confirm-options",
+      options: [
+        { value: "yes", label: "Yes", trigger: "final-message" },
+        { value: "no", label: "No", trigger: "Chartered" },
+      ],
+    },
+    {
+      id: "final-message",
+      message:
+        "Thank you! One of our Charter Specialists will connect with you shortly.",
+      trigger: "ServiceOptionsAfterLogin",
+    },
+    // Chartered flight data end
   ];
 
   return (
     <div>
       <Segment float="right">
         <ChatBot
-         steps={steps}
-         headerTitle="MyAirDeal" />
+          steps={steps}
+          handleEnd={(steps, values) => console.log(steps, values)}
+          headerTitle="MyAirDeal"
+        />
       </Segment>
     </div>
   );
