@@ -74,6 +74,14 @@ const App = () => {
     return <div>Logging in...</div>;
   };
 
+  const StartOverComponent = ({ triggerNextStep }) => {
+    const handleStartOver = () => {
+      triggerNextStep({ value: true, trigger: "Greet" });
+    };
+
+    return <button onClick={handleStartOver}>Start Over</button>;
+  };
+
   const steps = [
     {
       id: "Greet",
@@ -241,7 +249,7 @@ const App = () => {
       id: "BookingResponse",
       message: "Booking confirmed. Thank you!",
       asMessage: true,
-      end: true,
+      trigger:"ServiceOptionsAfterLogin",
     },
     {
       id: "BaggageAllowance",
@@ -252,7 +260,7 @@ const App = () => {
       id: "BaggageResponse",
       message: "Baggage allowance details fetched.",
       asMessage: true,
-      end: true,
+      trigger:"ServiceOptionsAfterLogin"
     },
     {
       id: "AvailableFlights",
@@ -310,12 +318,19 @@ const App = () => {
         { value: "no", label: "No", trigger: "AskServiceAfterLogin" },
       ],
     },
+    {
+      id: "StartOver",
+      component: <StartOverComponent />,
+      end: true,
+    },
   ];
 
   return (
     <div>
-      <Segment floated="right">
-        <ChatBot steps={steps} />
+      <Segment float="right">
+        <ChatBot
+         steps={steps}
+         headerTitle="MyAirDeal" />
       </Segment>
     </div>
   );
