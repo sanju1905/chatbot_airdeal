@@ -1,64 +1,33 @@
 const CharteredFlightSteps = [
   {
     id: "Chartered",
-    message: "How did you hear about us?",
+    message:
+      "Welcome to the Chartered Flights service. Please follow the prompts to provide the necessary information.",
     trigger: "hear-about-us",
   },
   {
     id: "hear-about-us",
-    options: [
-      {
-        value: "social_media",
-        label: "Social Media",
-        trigger: "current-flying-solution",
-      },
-      {
-        value: "recommendations",
-        label: "Recommendations",
-        trigger: "current-flying-solution",
-      },
-      { value: "events", label: "Events", trigger: "current-flying-solution" },
-      { value: "quora", label: "Quora", trigger: "current-flying-solution" },
-    ],
+    message: "How did you hear about us?",
+    trigger: "hear-about-us-input",
   },
   {
-    id: "current-flying-solution",
-    message: "What is your current flying solution?",
+    id: "hear-about-us-input",
+    user: true,
     trigger: "flying-solution-options",
   },
   {
     id: "flying-solution-options",
-    options: [
-      {
-        value: "private_jet",
-        label: "Private Jet Charter",
-        trigger: "departure-airport",
-      },
-      {
-        value: "group_charters",
-        label: "Group Charters",
-        trigger: "departure-airport",
-      },
-      {
-        value: "concierge_charters",
-        label: "Concierge Charters",
-        trigger: "departure-airport",
-      },
-      {
-        value: "air_ambulance",
-        label: "Air Ambulance",
-        trigger: "departure-airport",
-      },
-      {
-        value: "aircraft_sales",
-        label: "Aircraft Sales",
-        trigger: "departure-airport",
-      },
-    ],
+    message: "What is your current flying solution?",
+    trigger: "flying-solution-options-input",
+  },
+  {
+    id: "flying-solution-options-input",
+    user: true,
+    trigger: "departure-airport",
   },
   {
     id: "departure-airport",
-    message: "Please enter the departure airport.",
+    message: "Please enter the departure airport:",
     trigger: "departure-airport-input",
   },
   {
@@ -68,7 +37,7 @@ const CharteredFlightSteps = [
   },
   {
     id: "destination-airport",
-    message: "Please enter the destination airport.",
+    message: "Please enter the destination airport:",
     trigger: "destination-airport-input",
   },
   {
@@ -84,13 +53,13 @@ const CharteredFlightSteps = [
   {
     id: "journey-type-options",
     options: [
-      { value: "one_way", label: "One Way", trigger: "date-of-journey" },
-      { value: "round_trip", label: "Round Trip", trigger: "date-of-journey" },
+      { value: "one-way", label: "One-Way", trigger: "date-of-journey" },
+      { value: "round-trip", label: "Round-Trip", trigger: "date-of-journey" },
     ],
   },
   {
     id: "date-of-journey",
-    message: "Please enter the date of the journey.",
+    message: "Please enter the date of your journey:",
     trigger: "date-of-journey-input",
   },
   {
@@ -100,42 +69,31 @@ const CharteredFlightSteps = [
   },
   {
     id: "number-of-passengers",
-    message: "Please enter the number of passengers.",
+    message: "How many passengers will be traveling?",
     trigger: "number-of-passengers-input",
   },
   {
     id: "number-of-passengers-input",
     user: true,
-    trigger: "summary",
+    trigger: "confirm-details",
   },
   {
-    id: "summary",
+    id: "confirm-details",
+    message: "Please review and confirm your details:",
+    trigger: "confirm-details-component",
+  },
+  {
+    id: "confirm-details-component",
+    component: <ConfirmDetailsComponent />,
+    asMessage: true,
+    trigger: "CharteredFlightResponse",
+  },
+  {
+    id: "CharteredFlightResponse",
     message:
-      "Please confirm your details: \nHow did you hear about us: {previousValue}",
-    trigger: "hear-about-us-summary",
-  },
-  {
-    id: "hear-about-us-summary",
-    user: true,
-    trigger: "confirm",
-  },
-  {
-    id: "confirm",
-    message: "Is everything correct?",
-    trigger: "confirm-options",
-  },
-  {
-    id: "confirm-options",
-    options: [
-      { value: "yes", label: "Yes", trigger: "final-message" },
-      { value: "no", label: "No", trigger: "start-over" },
-    ],
-  },
-  {
-    id: "final-message",
-    message:
-      "Thank you! One of our Charter Specialists will connect with you shortly.",
-    end: true,
+      "Thank you for providing the details. Our team will contact you soon to finalize your chartered flight booking.",
+    asMessage: true,
+    trigger: "AskServiceAfterLogin",
   },
 ];
 

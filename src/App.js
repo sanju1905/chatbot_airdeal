@@ -3,17 +3,13 @@ import { Segment } from "semantic-ui-react";
 import ChatBot from "react-simple-chatbot";
 import axios from "axios";
 
-
-
 const App = () => {
   const [user, setUser] = useState(null);
+  const [loginMessage, setLoginMessage] = useState(""); // State to store login message
 
-
-
-  //confirm the details
   const ConfirmDetailsComponent = ({ steps }) => {
-    console.log("ConfirmDetailsComponent steps:", steps); // Add logging
-  
+    console.log("ConfirmDetailsComponent steps:", steps);
+
     const hearAboutUs = steps["hear-about-us"]?.value || "N/A";
     const flyingSolution = steps["flying-solution-options"]?.value || "N/A";
     const departureAirport = steps["departure-airport-input"]?.value || "N/A";
@@ -21,7 +17,7 @@ const App = () => {
     const journeyType = steps["journey-type-options"]?.value || "N/A";
     const dateOfJourney = steps["date-of-journey-input"]?.value || "N/A";
     const numberOfPassengers = steps["number-of-passengers-input"]?.value || "N/A";
-  
+
     const details = [
       `How did you hear about us: ${hearAboutUs}`,
       `Current flying solution: ${flyingSolution}`,
@@ -31,7 +27,7 @@ const App = () => {
       `Date of journey: ${dateOfJourney}`,
       `Number of passengers: ${numberOfPassengers}`,
     ];
-  
+
     return (
       <div>
         {details.map((detail, index) => (
@@ -40,17 +36,18 @@ const App = () => {
       </div>
     );
   };
-  
 
-  const registerUser = async ({ name, email, password }) => {
+  const registerUser = async ({ firstname, lastname, phone, email, password }) => {
     try {
       const response = await axios.post("http://localhost:5001/register", {
-        name,
+        firstname,
+        lastname,
+        phone,
         email,
         password,
       });
       setUser(response.data.user);
-      console.log("Registration successful", response.data);
+      console.log("Registration successful", response.data.message);
       return "RegistrationSuccess";
     } catch (error) {
       console.error("Registration failed", error);
@@ -65,7 +62,8 @@ const App = () => {
         password,
       });
       setUser(response.data.user);
-      console.log("Login successful", response.data);
+      setLoginMessage(response.data.message); // Set login message to state
+      console.log("Login successful", response.data.message);
       return "LoginSuccess";
     } catch (error) {
       console.error("Login failed", error);
@@ -74,11 +72,19 @@ const App = () => {
   };
 
   const RegistrationComponent = ({ steps, triggerNextStep }) => {
-    const { WaitingForName, WaitingForEmail, WaitingForPassword } = steps;
+    const {
+      WaitingForFirstName,
+      WaitingForLastName,
+      WaitingForPhone,
+      WaitingForEmail,
+      WaitingForPassword,
+    } = steps;
 
     const handleRegistration = async () => {
       const result = await registerUser({
-        name: WaitingForName.value,
+        firstname: WaitingForFirstName.value,
+        lastname: WaitingForLastName.value,
+        phone: WaitingForPhone.value,
         email: WaitingForEmail.value,
         password: WaitingForPassword.value,
       });
@@ -94,21 +100,38 @@ const App = () => {
 
   const LoginComponent = ({ steps, triggerNextStep }) => {
     const { WaitingForEmailForLogin, WaitingForPasswordForLogin } = steps;
-
+  
+    const [loginMessage, setLoginMessage] = useState(""); // State to store login message
+  
     const handleLogin = async () => {
-      const result = await loginUser({
-        email: WaitingForEmailForLogin.value,
-        password: WaitingForPasswordForLogin.value,
-      });
-      triggerNextStep({ trigger: result });
+      try {
+        const response = await axios.post("http://localhost:5001/login", {
+          email: WaitingForEmailForLogin.value,
+          password: WaitingForPasswordForLogin.value,
+        });
+        setUser(response.data.user);
+        setLoginMessage(response.data.message); // Set login message to state
+        console.log("Login successful", response.data.message);
+  
+        triggerNextStep({ trigger: "LoginSuccess", value: response.data.message });
+      } catch (error) {
+        console.error("Login failed", error);
+        triggerNextStep({ trigger: "LoginFailed" });
+      }
     };
-
+  
     React.useEffect(() => {
       handleLogin();
     }, []);
-
-    return <div>Logging in...</div>;
+  
+    return (
+      <div>
+        Logging in...
+        {/* {loginMessage} Display login message */}
+      </div>
+    );
   };
+  
 
   const StartOverComponent = ({ triggerNextStep }) => {
     const handleStartOver = () => {
@@ -129,8 +152,6 @@ const App = () => {
       message: "Do you have an account?",
       trigger: "ServiceOptions",
     },
-    // Service options start
-
     {
       id: "ServiceOptions",
       options: [
@@ -146,9 +167,6 @@ const App = () => {
         },
       ],
     },
-    // Service options end
-
-    // Options after login
     {
       id: "AskEmailForLogin",
       message: "Enter your Email:",
@@ -177,7 +195,7 @@ const App = () => {
     },
     {
       id: "LoginSuccess",
-      message: "Login successful!",
+      message: "{previousValue}!", // Display login message
       trigger: "AskServiceAfterLogin",
     },
     {
@@ -190,9 +208,6 @@ const App = () => {
       message: "Hi, what do you need help with?",
       trigger: "ServiceOptionsAfterLogin",
     },
-    // Login end
-
-    // Services start
     {
       id: "ServiceOptionsAfterLogin",
       options: [
@@ -213,22 +228,39 @@ const App = () => {
         },
       ],
     },
-    // Services end
-
-    // Register data start
     {
       id: "AskName",
-      message: "Enter your Name:",
-      trigger: "WaitingForName",
+      message: "Please enter your First Name:",
+      trigger: "WaitingForFirstName",
     },
     {
-      id: "WaitingForName",
+      id: "WaitingForFirstName",
+      user: true,
+      trigger: "AskLastName",
+    },
+    {
+      id: "AskLastName",
+      message: "Please enter your Last Name:",
+      trigger: "WaitingForLastName",
+    },
+    {
+      id: "WaitingForLastName",
+      user: true,
+      trigger: "AskPhone",
+    },
+    {
+      id: "AskPhone",
+      message: "Please enter your Phone Number:",
+      trigger: "WaitingForPhone",
+    },
+    {
+      id: "WaitingForPhone",
       user: true,
       trigger: "AskEmail",
     },
     {
       id: "AskEmail",
-      message: "Enter your Email:",
+      message: "Please enter your Email:",
       trigger: "WaitingForEmail",
     },
     {
@@ -238,7 +270,7 @@ const App = () => {
     },
     {
       id: "AskPassword",
-      message: "Enter your Password:",
+      message: "Please enter your Password:",
       trigger: "WaitingForPassword",
     },
     {
@@ -254,56 +286,101 @@ const App = () => {
     },
     {
       id: "RegistrationSuccess",
-      message: "User registered successfully!",
-      trigger: "AskServiceAfterRegister",
+      message: "Registration successful! You can now log in.",
+      trigger: "AskService",
     },
     {
       id: "RegistrationFailed",
-      message: "Registration failed. Please try again.",
+      message: "Registration failed. Please try again with different credentials.",
       trigger: "AskService",
     },
-    // Register data end
-    {
-      id: "AskServiceAfterRegister",
-      message: "Hi, what do you need help with?",
-      trigger: "ServiceOptionsAfterLogin",
-    },
-
-    // Booking flight start
     {
       id: "BookFlight",
-      message: "Enter your destination:",
-      trigger: "WaitingForDestination",
+      message: "Sure, let's book a flight. Please provide your travel details.",
+      trigger: "AskDepartureAirport",
     },
     {
-      id: "WaitingForDestination",
+      id: "AskDepartureAirport",
+      message: "What is your departure airport?",
+      trigger: "departure-airport-input",
+    },
+    {
+      id: "departure-airport-input",
       user: true,
+      trigger: "AskDestinationAirport",
+    },
+    {
+      id: "AskDestinationAirport",
+      message: "What is your destination airport?",
+      trigger: "destination-airport-input",
+    },
+    {
+      id: "destination-airport-input",
+      user: true,
+      trigger: "AskJourneyType",
+    },
+    {
+      id: "AskJourneyType",
+      message: "What type of journey is this?",
+      trigger: "journey-type-options",
+    },
+    {
+      id: "journey-type-options",
+      options: [
+        { value: "one-way", label: "One-way", trigger: "AskDateOfJourney" },
+        { value: "round-trip", label: "Round-trip", trigger: "AskDateOfJourney" },
+      ],
+    },
+    {
+      id: "AskDateOfJourney",
+      message: "When would you like to travel? Please enter the date.",
+      trigger: "date-of-journey-input",
+    },
+    {
+      id: "date-of-journey-input",
+      user: true,
+      trigger: "AskNumberOfPassengers",
+    },
+    {
+      id: "AskNumberOfPassengers",
+      message: "How many passengers are traveling?",
+      trigger: "number-of-passengers-input",
+    },
+    {
+      id: "number-of-passengers-input",
+      user: true,
+      trigger: "ConfirmBookingDetails",
+    },
+    {
+      id: "ConfirmBookingDetails",
+      component: <ConfirmDetailsComponent />,
+      asMessage: true,
       trigger: "ConfirmBooking",
     },
     {
       id: "ConfirmBooking",
-      message: "Booking a flight to {previousValue}. Please wait...",
-      trigger: "BookingResponse",
+      message: "Please confirm your booking details.",
+      trigger: "confirm-booking-options",
     },
-
     {
-      id: "BookingResponse",
-      message: "Booking confirmed. Thank you!",
-      asMessage: true,
-      trigger: "ServiceOptionsAfterLogin",
+      id: "confirm-booking-options",
+      options: [
+        { value: "yes", label: "Yes", trigger: "BookingConfirmed" },
+        { value: "no", label: "No", trigger: "AskDepartureAirport" },
+      ],
     },
-
-    // Booking flight end
-
-    // Cheap flight start
+    {
+      id: "BookingConfirmed",
+      message: "Your flight booking has been confirmed. Thank you!",
+      trigger: "AskServiceAfterLogin",
+    },
     {
       id: "AskCheapFlightDetails",
-      message:
-        "Please enter your departure and arrival destinations separated by a comma (e.g., Bengaluru, Chennai):",
-      trigger: "WaitingForCheapFlightDetails",
+      message: "Sure, let's book a cheap flight. Please provide your departure and arrival destinations separated by a comma (e.g., Bengaluru, Chennai).",
+      trigger: "cheap-flight-input",
     },
     {
-      id: "WaitingForCheapFlightDetails",
+      id: "cheap-flight-input",
       user: true,
       trigger: "SaveCheapFlightDetails",
     },
@@ -311,53 +388,31 @@ const App = () => {
       id: "SaveCheapFlightDetails",
       message: "Saving your cheap flight details...",
       trigger: "DisplayCheapFlightDetails",
-      delay: 500, // Simulating a delay for saving data
+      delay: 1000,
     },
     {
       id: "DisplayCheapFlightDetails",
-      message: ({ previousValue }) => {
-        if (!previousValue) {
-          return "Sorry, I didn't catch that. Could you please try again?";
-        }
-        const [departure, arrival] = previousValue.split(",");
-        return `Your cheap flight details are: Departure from ${departure.trim()} to ${arrival.trim()}.`;
-      },
-      trigger: "ConfirmCheapFlightBooking",
+      message: "Your cheap flight details have been saved successfully.",
+      trigger: "confirm-cheap-flight-booking",
     },
     {
-      id: "ConfirmCheapFlightBooking",
+      id: "confirm-cheap-flight-booking",
       options: [
-        { value: "yes", label: "Yes", trigger: "BookingResponse" },
+        { value: "yes", label: "Yes", trigger: "AskServiceAfterLogin" },
         { value: "no", label: "No", trigger: "AskServiceAfterLogin" },
       ],
     },
-
-    // Cheap flight end
-
-    // Chartered Flights Data start
     {
       id: "Chartered",
-      message: "How did you hear about us?",
+      message: "Let's book a chartered flight. How did you hear about us?",
       trigger: "hear-about-us",
     },
     {
       id: "hear-about-us",
       options: [
-        {
-          value: "social_media",
-          label: "Social Media",
-          trigger: "current-flying-solution",
-        },
-        {
-          value: "recommendations",
-          label: "Recommendations",
-          trigger: "current-flying-solution",
-        },
-        {
-          value: "events",
-          label: "Events",
-          trigger: "current-flying-solution",
-        },
+        { value: "social_media", label: "Social Media", trigger: "current-flying-solution" },
+        { value: "recommendations", label: "Recommendations", trigger: "current-flying-solution" },
+        { value: "events", label: "Events", trigger: "current-flying-solution" },
         { value: "quora", label: "Quora", trigger: "current-flying-solution" },
       ],
     },
@@ -369,31 +424,11 @@ const App = () => {
     {
       id: "flying-solution-options",
       options: [
-        {
-          value: "private_jet",
-          label: "Private Jet Charter",
-          trigger: "departure-airport",
-        },
-        {
-          value: "group_charters",
-          label: "Group Charters",
-          trigger: "departure-airport",
-        },
-        {
-          value: "concierge_charters",
-          label: "Concierge Charters",
-          trigger: "departure-airport",
-        },
-        {
-          value: "air_ambulance",
-          label: "Air Ambulance",
-          trigger: "departure-airport",
-        },
-        {
-          value: "aircraft_sales",
-          label: "Aircraft Sales",
-          trigger: "departure-airport",
-        },
+        { value: "private_jet", label: "Private Jet Charter", trigger: "departure-airport" },
+        { value: "group_charters", label: "Group Charters", trigger: "departure-airport" },
+        { value: "concierge_charters", label: "Concierge Charters", trigger: "departure-airport" },
+        { value: "air_ambulance", label: "Air Ambulance", trigger: "departure-airport" },
+        { value: "aircraft_sales", label: "Aircraft Sales", trigger: "departure-airport" },
       ],
     },
     {
@@ -425,11 +460,7 @@ const App = () => {
       id: "journey-type-options",
       options: [
         { value: "one_way", label: "One Way", trigger: "date-of-journey" },
-        {
-          value: "round_trip",
-          label: "Round Trip",
-          trigger: "date-of-journey",
-        },
+        { value: "round_trip", label: "Round Trip", trigger: "date-of-journey" },
       ],
     },
     {
@@ -481,7 +512,6 @@ const App = () => {
         "Thank you! One of our Charter Specialists will connect with you shortly.",
       trigger: "ServiceOptionsAfterLogin",
     },
-    // Chartered flight data end
   ];
 
   return (
