@@ -1,9 +1,5 @@
 
-.rsc-ts-bubble-avatar {
-    background-image: url("../icon/airdeal.png");
-    background-size: cover;
-    width: 36px; /* Adjust width and height as needed */
-    height: 36px;
-    border-radius: 50%; /* Ensure rounded shape */
+.sc-kAycRU hucNmg rsc-ts-image{
+    background-image: url("../icon/airdeal.png") !important;
   }
   

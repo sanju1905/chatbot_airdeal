@@ -1,32 +1,91 @@
-const CheapFlights=[
-    // Flight booking steps...
-    {
-        id: "AskCheapFlightDetails",
-        message: "Sure, let's book a cheap flight. Please provide your departure and arrival destinations separated by a comma (e.g., Bengaluru, Chennai).",
-        trigger: "cheap-flight-input",
-      },
-      {
-        id: "cheap-flight-input",
-        user: true,
-        trigger: "SaveCheapFlightDetails",
-      },
-      {
-        id: "SaveCheapFlightDetails",
-        message: "Saving your cheap flight details...",
-        trigger: "DisplayCheapFlightDetails",
-        delay: 1000,
-      },
-      {
-        id: "DisplayCheapFlightDetails",
-        message: "Your cheap flight details have been saved successfully.",
-        trigger: "confirm-cheap-flight-booking",
-      },
-      {
-        id: "confirm-cheap-flight-booking",
-        options: [
-          { value: "yes", label: "Yes", trigger: "AskServiceAfterLogin" },
-          { value: "no", label: "No", trigger: "AskServiceAfterLogin" },
-        ],
-      },
-]
+import ConfirmCheaps from "./ConfirmCheaps";
+import Date from "./Date";
+const CheapFlights = [
+  // Flight booking steps...
+  {
+    id: "AskCheapFlightDetails",
+    message: "Sure, let's book a cheap flight.",
+    trigger: "AskDepartureAirport",
+  },
+  {
+    id: "AskDepartureAirport",
+    message: "What is your departure airport?",
+    trigger: "departure-airport-input",
+  },
+  {
+    id: "departure-airport-input",
+    user: true,
+    trigger: "AskDestinationAirport",
+  },
+  {
+    id: "AskDestinationAirport",
+    message: "What is your destination airport?",
+    trigger: "destination-airport-input",
+  },
+  {
+    id: "destination-airport-input",
+    user: true,
+    trigger: "AskJourneyType",
+  },
+  {
+    id: "AskJourneyType",
+    message: "What type of journey is this?",
+    trigger: "journey-type-options",
+  },
+  {
+    id: "journey-type-options",
+    options: [
+      { value: "one-way", label: "One-way", trigger: "AskDateOfJourney" },
+      { value: "round-trip", label: "Round-trip", trigger: "AskDateOfJourney" },
+    ],
+  },
+  {
+    id: "AskDateOfJourney",
+    message: "When would you like to travel?",
+    trigger: "date-of-journey-input",
+  },
+  {
+    id: "date-of-journey-input",
+    component: <Date/>,
+    waitAction: true,
+    trigger: "AskNumberOfPassengers",
+    
+  },
+  
+  {
+    id: "AskNumberOfPassengers",
+    message: "How many passengers are traveling?",
+    trigger: "number-of-passengers-input",
+  },
+  {
+    id: "number-of-passengers-input",
+    user: true,
+    trigger: "ConfirmBookingDetails",
+  },
+  {
+    id: "ConfirmBookingDetails",
+    component: <ConfirmCheaps />,
+    asMessage: true,
+    trigger: "ConfirmBooking",
+  },
+  {
+    id: "ConfirmBooking",
+    message: "Please confirm your booking details.",
+    trigger: "confirm-booking-options",
+  },
+  {
+    id: "confirm-booking-options",
+    options: [
+      { value: "yes", label: "Yes", trigger: "BookingConfirmed" },
+      { value: "no", label: "No", trigger: "AskDepartureAirport" },
+    ],
+  },
+  {
+    id: "BookingConfirmed",
+    message: "Thank you for Booking! Our team will connect with you shortly.",
+    // trigger: "AskServiceAfterLogin",
+    end:true
+  },
+];
+
 export default CheapFlights;

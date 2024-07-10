@@ -1,19 +1,18 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+
 const RegistrationComponent = ({ steps, triggerNextStep }) => {
+  const {
+    WaitingForFirstName,
+    WaitingForLastName,
+    WaitingForPhone,
+    WaitingForEmail,
+    WaitingForPassword,
+  } = steps;
 
-
-    const {
-      WaitingForFirstName,
-      WaitingForLastName,
-      WaitingForPhone,
-      WaitingForEmail,
-      WaitingForPassword,
-    } = steps;
-
-    const handleRegistration = async () => {
-      const result = await RegisterUser({
+  const handleRegistration = async () => {
+    try {
+      const result = await registerUser({
         firstname: WaitingForFirstName.value,
         lastname: WaitingForLastName.value,
         phone: WaitingForPhone.value,
@@ -21,32 +20,34 @@ const RegistrationComponent = ({ steps, triggerNextStep }) => {
         password: WaitingForPassword.value,
       });
       triggerNextStep({ trigger: result });
-    };
-
-    React.useEffect(() => {
-      handleRegistration();
-    }, []);
-
-    return <div>Registering user...</div>;
-  };
-
-  const RegisterUser = async ({ firstname, lastname, phone, email, password }) => {
-    const [user, setUser] = useState(null);
-    try {
-      const response = await axios.post("http://localhost:5001/register", {
-        firstname,
-        lastname,
-        phone,
-        email,
-        password,
-      });
-      setUser(response.data.user);
-      console.log("Registration successful", response.data.message);
-      return "RegistrationSuccess";
     } catch (error) {
-      console.error("Registration failed", error);
-      return "RegistrationFailed";
+      console.error("Error during registration:", error);
+      triggerNextStep({ trigger: "RegistrationFailed" });
     }
   };
 
-  export default RegistrationComponent;
+  useEffect(() => {
+    handleRegistration();
+  }, []);
+
+  return <div>Registering user...</div>;
+};
+
+const registerUser = async ({ firstname, lastname, phone, email, password }) => {
+  try {
+    const response = await axios.post("http://localhost:5001/register", {
+      firstname,
+      lastname,
+      phone,
+      email,
+      password,
+    });
+    console.log("Registration successful", response.data.message);
+    return "RegistrationSuccess";
+  } catch (error) {
+    console.error("Registration failed", error);
+    throw error; // Re-throw error to handle in calling component
+  }
+};
+
+export default RegistrationComponent;

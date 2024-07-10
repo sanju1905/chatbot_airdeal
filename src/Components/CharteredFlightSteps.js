@@ -1,21 +1,12 @@
 import React from "react";
 import ConfirmDetailsComponent from "./ConfirmDetailsComponent";
+import Date from "./Date";
 
 const CharteredFlightSteps = [
   {
     id: "Chartered",
     message: "Let's book a chartered flight.",
     trigger: "current-flying-solution",
-  },
-  {
-    id: "hear-about-us",
-    message:"How did you hear about us ?",
-    options: [
-      { value: "social_media", label: "Social Media", trigger: "summary" },
-      { value: "recommendations", label: "Recommendations", trigger: "summary" },
-      { value: "events", label: "Events", trigger: "summary" },
-      { value: "quora", label: "Quora", trigger: "summary" },
-    ],
   },
   {
     id: "current-flying-solution",
@@ -25,64 +16,79 @@ const CharteredFlightSteps = [
   {
     id: "flying-solution-options",
     options: [
-      { value: "private_jet", label: "Private Jet Charter", trigger: "departure-airport" },
-      { value: "group_charters", label: "Group Charters", trigger: "departure-airport" },
-      { value: "concierge_charters", label: "Concierge Charters", trigger: "departure-airport" },
-      { value: "air_ambulance", label: "Air Ambulance", trigger: "departure-airport" },
-      { value: "aircraft_sales", label: "Aircraft Sales", trigger: "departure-airport" },
+      { value: "private_jet", label: "Private Jet Charter", trigger: "departure-airports" },
+      { value: "group_charters", label: "Group Charters", trigger: "departure-airports" },
+      { value: "concierge_charters", label: "Concierge Charters", trigger: "departure-airports" },
+      { value: "air_ambulance", label: "Air Ambulance", trigger: "departure-airports" },
+      { value: "aircraft_sales", label: "Aircraft Sales", trigger: "departure-airports" },
     ],
   },
   {
-    id: "departure-airport",
+    id: "departure-airports",
     message: "Please enter the departure airport.",
-    trigger: "departure-airport-input",
+    trigger: "departure-airport-inputs",
   },
   {
-    id: "departure-airport-input",
+    id: "departure-airport-inputs",
     user: true,
-    trigger: "destination-airport",
+    trigger: "destination-airports",
   },
   {
-    id: "destination-airport",
+    id: "destination-airports",
     message: "Please enter the destination airport.",
-    trigger: "destination-airport-input",
+    trigger: "destination-airport-inputs",
   },
   {
-    id: "destination-airport-input",
+    id: "destination-airport-inputs",
     user: true,
-    trigger: "journey-type",
+    trigger: "journey-types",
   },
   {
-    id: "journey-type",
+    id: "journey-types",
     message: "Is this a one-way or round trip?",
-    trigger: "journey-type-options",
+    trigger: "journey-type-option",
   },
   {
-    id: "journey-type-options",
+    id: "journey-type-option",
     options: [
-      { value: "one_way", label: "One Way", trigger: "date-of-journey" },
-      { value: "round_trip", label: "Round Trip", trigger: "date-of-journey" },
+      { value: "one_way", label: "One Way", trigger: "date-of-journeys" },
+      { value: "round_trip", label: "Round Trip", trigger: "date-of-journeys" },
     ],
   },
   {
-    id: "date-of-journey",
-    message: "Please enter the date of the journey (DD/MM/YYYY).",
-    trigger: "date-of-journey-input",
+    id: "date-of-journeys",
+    message: "Please select the date of the journey in format(DD/MM/YYY).",
+    trigger: "date-of-journey-inputs",
   },
   {
-    id: "date-of-journey-input",
-    user: true,
-    trigger: "number-of-passengers",
+    id: "date-of-journey-inputs",
+    waitAction: true,
+    component: <Date/>, // Add inputType property here
+    trigger: "number-of-passenger",
   },
   {
-    id: "number-of-passengers",
+    id: "number-of-passenger",
     message: "Please enter the number of passengers.",
-    trigger: "number-of-passengers-input",
+    trigger: "number-of-passengers-inputs",
   },
   {
-    id: "number-of-passengers-input",
+    id: "number-of-passengers-inputs",
     user: true,
     trigger: "hear-about-us",
+  },
+  {
+    id: "hear-about-us",
+    message: "How did you hear about us?",
+    trigger: "hear-about-us-options",
+  },
+  {
+    id: "hear-about-us-options",
+    options: [
+      { value: "social_media", label: "Social Media", trigger: "summary" },
+      { value: "recommendations", label: "Recommendations", trigger: "summary" },
+      { value: "events", label: "Events", trigger: "summary" },
+      { value: "quora", label: "Quora", trigger: "summary" },
+    ],
   },
   {
     id: "summary",
@@ -110,7 +116,8 @@ const CharteredFlightSteps = [
   {
     id: "final-message",
     message: "Thank you! One of our Charter Specialists will connect with you shortly.",
-    trigger: "ServiceOptionsAfterLogin",
+    end:true,
+    // trigger: "ServiceOptionsAfterLogin",
   },
 ];
 

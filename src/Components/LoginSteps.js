@@ -1,6 +1,6 @@
 import React from "react";
 import LoginComponent from "./LoginComponent";
-
+import PasswordInput from "./PasswordInput";
 const isValidEmail = (email) => {
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailPattern.test(email);
@@ -29,9 +29,9 @@ const LoginSteps = [
     trigger: "WaitingForPasswordForLogin",
   },
   {
-    id: "WaitingForPasswordForLogin",
-    user: true,
-    inputType: "password",
+    id: "WaitingForPasswordForLogin",  
+    component: <PasswordInput />,
+    waitAction:true,
     trigger: "LoginUser",
   },
   {

@@ -67,7 +67,7 @@ const RegisterSteps = [
   {
     id: "WaitingForPassword",
     user: true,
-    inputType: "password",
+    hideInput: true, // Ensure password is hidden
     trigger: "RegisterUser",
   },
   {
@@ -89,4 +89,3 @@ const RegisterSteps = [
 ];
 
 export default RegisterSteps;
- 
