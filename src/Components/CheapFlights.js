@@ -1,7 +1,7 @@
 import ConfirmCheaps from "./ConfirmCheaps";
+import ProceedWithBooking from "./ProceedWithBooking";
 import Date from "./Date";
 const CheapFlights = [
-  // Flight booking steps...
   {
     id: "AskCheapFlightDetails",
     message: "Sure, let's book a cheap flight.",
@@ -46,12 +46,10 @@ const CheapFlights = [
   },
   {
     id: "date-of-journey-input",
-    component: <Date/>,
+    component: <Date />,
     waitAction: true,
     trigger: "AskNumberOfPassengers",
-    
   },
-  
   {
     id: "AskNumberOfPassengers",
     message: "How many passengers are traveling?",
@@ -76,16 +74,22 @@ const CheapFlights = [
   {
     id: "confirm-booking-options",
     options: [
-      { value: "yes", label: "Yes", trigger: "BookingConfirmed" },
+      { value: "yes", label: "Yes", trigger: "ProceedWithBooking" },
       { value: "no", label: "No", trigger: "AskDepartureAirport" },
     ],
   },
   {
+    id: "ProceedWithBooking",
+    component: <ProceedWithBooking />,
+    waitAction: true,
+    trigger: "BookingConfirmed",
+  },
+  {
     id: "BookingConfirmed",
     message: "Thank you for Booking! Our team will connect with you shortly.",
-    // trigger: "AskServiceAfterLogin",
-    end:true
+    end: true,
   },
 ];
 
 export default CheapFlights;
+

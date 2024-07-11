@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
-const PasswordInput = ({ triggerNextStep, steps }) => {
+const PasswordInput = ({ triggerNextStep }) => {
   const [password, setPassword] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
-    if (isSubmitted) {
+    if (isSubmitted && password.trim() !== '') {
       triggerNextStep({ value: password });
     }
   }, [isSubmitted, password, triggerNextStep]);
@@ -16,19 +16,31 @@ const PasswordInput = ({ triggerNextStep, steps }) => {
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
+      event.preventDefault(); // Prevent form submission if inside a form element
+      setIsSubmitted(true);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (password.trim() !== '') {
       setIsSubmitted(true);
     }
   };
 
   return (
-    <input
-      type="password"
-      value={password}
-      onChange={handleChange}
-      onKeyPress={handleKeyPress}
-      placeholder="Enter your password"
-      disabled={isSubmitted}
-    />
+    <div>
+      <input
+        type="password"
+        value={password}
+        onChange={handleChange}
+        onKeyPress={handleKeyPress}
+        placeholder="Enter your password"
+        disabled={isSubmitted}
+      />
+      <button type="button" onClick={handleSubmit} disabled={isSubmitted}>
+        Submit
+      </button>
+    </div>
   );
 };
 

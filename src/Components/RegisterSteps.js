@@ -39,6 +39,9 @@ const RegisterSteps = [
       if (!/^\d+$/.test(value)) {
         return "Invalid phone number. Please enter digits only.";
       }
+      else if(value.length < 10){
+        return "Invalid phone number. Enter correct number ."
+      }
       return true;
     },
     trigger: "AskEmail",

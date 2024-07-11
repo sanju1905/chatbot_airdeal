@@ -8,12 +8,20 @@ import LoginSteps from "./Components/LoginSteps";
 import RegisterSteps from "./Components/RegisterSteps";
 import Options from "./Components/Options";
 import axios from "axios";
+import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
+import Booking from "./pages/Booking";
 
 const App = () => {
   const [user, setUser] = useState(null);
   const [loginMessage, setLoginMessage] = useState("");
 
-  const registerUser = async ({ firstname, lastname, phone, email, password }) => {
+  const registerUser = async ({
+    firstname,
+    lastname,
+    phone,
+    email,
+    password,
+  }) => {
     try {
       const response = await axios.post("http://localhost:5001/register", {
         firstname,
@@ -46,6 +54,8 @@ const App = () => {
       return "LoginFailed";
     }
   };
+
+
 
   const RegistrationComponent = ({ steps, triggerNextStep }) => {
     const {
@@ -135,20 +145,23 @@ const App = () => {
   ];
 
   return (
-    <div>
+    <Router>
+      <Routes>
+        <Route path="/proceed" element={<Booking floating={false} />} />{" "}
+        {/* Define the desired booking page route */}
+      </Routes>
       <Segment float="right">
         <ChatBot
           steps={steps}
           handleEnd={(steps, values) => console.log(steps, values)}
-          speechSynthesis={{ enable: true, lang: 'en' }}
+          speechSynthesis={{ enable: true, lang: "en" }}
           recognitionEnable={true}
           headerTitle="MyAirDeal"
           botAvatar="./airdeal.png"
-          floating={true}
-          enableMobileAutoFocus={true}
+          floating={true} // Use state to manage floating
         />
       </Segment>
-    </div>
+    </Router>
   );
 };
 
