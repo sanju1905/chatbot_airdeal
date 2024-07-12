@@ -1,6 +1,6 @@
 import React from "react";
 import ConfirmDetailsComponent from "./ConfirmDetailsComponent";
-import Date from "./Date";
+import DateComponent from "./DateComponent";
 
 const CharteredFlightSteps = [
   {
@@ -16,11 +16,31 @@ const CharteredFlightSteps = [
   {
     id: "flying-solution-options",
     options: [
-      { value: "private_jet", label: "Private Jet Charter", trigger: "departure-airports" },
-      { value: "group_charters", label: "Group Charters", trigger: "departure-airports" },
-      { value: "concierge_charters", label: "Concierge Charters", trigger: "departure-airports" },
-      { value: "air_ambulance", label: "Air Ambulance", trigger: "departure-airports" },
-      { value: "aircraft_sales", label: "Aircraft Sales", trigger: "departure-airports" },
+      {
+        value: "private_jet",
+        label: "Private Jet Charter",
+        trigger: "departure-airports",
+      },
+      {
+        value: "group_charters",
+        label: "Group Charters",
+        trigger: "departure-airports",
+      },
+      {
+        value: "concierge_charters",
+        label: "Concierge Charters",
+        trigger: "departure-airports",
+      },
+      {
+        value: "air_ambulance",
+        label: "Air Ambulance",
+        trigger: "departure-airports",
+      },
+      {
+        value: "aircraft_sales",
+        label: "Aircraft Sales",
+        trigger: "departure-airports",
+      },
     ],
   },
   {
@@ -52,7 +72,7 @@ const CharteredFlightSteps = [
     id: "journey-type-option",
     options: [
       { value: "one_way", label: "One Way", trigger: "date-of-journeys" },
-      { value: "round_trip", label: "Round Trip", trigger: "date-of-journeys" },
+      { value: "round_trip", label: "Round Trip", trigger: "start-journeys" },
     ],
   },
   {
@@ -63,9 +83,35 @@ const CharteredFlightSteps = [
   {
     id: "date-of-journey-inputs",
     waitAction: true,
-    component: <Date/>, // Add inputType property here
+    component: <DateComponent />, // Add inputType property here
     trigger: "number-of-passenger",
   },
+  //Start Date
+  {
+    id: "start-journeys",
+    message: "Please Select Start date of the journey.",
+    trigger: "start-journey-inputs",
+  },
+  {
+    id: "start-journey-inputs",
+    waitAction: true,
+    component: <DateComponent />, // Add inputType property here
+    trigger: "end-journeys",
+  },
+
+  //End Date
+  {
+    id: "end-journeys",
+    message: "Please select End date of the journey.",
+    trigger: "end-journey-inputs",
+  },
+  {
+    id: "end-journey-inputs",
+    waitAction: true,
+    component: <DateComponent />, // Add inputType property here
+    trigger: "number-of-passenger",
+  },
+
   {
     id: "number-of-passenger",
     message: "Please enter the number of passengers.",
@@ -85,7 +131,11 @@ const CharteredFlightSteps = [
     id: "hear-about-us-options",
     options: [
       { value: "social_media", label: "Social Media", trigger: "summary" },
-      { value: "recommendations", label: "Recommendations", trigger: "summary" },
+      {
+        value: "recommendations",
+        label: "Recommendations",
+        trigger: "summary",
+      },
       { value: "events", label: "Events", trigger: "summary" },
       { value: "quora", label: "Quora", trigger: "summary" },
     ],
@@ -115,8 +165,9 @@ const CharteredFlightSteps = [
   },
   {
     id: "final-message",
-    message: "Thank you! One of our Charter Specialists will connect with you shortly.",
-    end:true,
+    message:
+      "Thank you! One of our Charter Specialists will connect with you shortly.",
+    end: true,
     // trigger: "ServiceOptionsAfterLogin",
   },
 ];

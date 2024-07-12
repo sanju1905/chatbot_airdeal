@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const Date = ({ triggerNextStep }) => {
+const DateComponent = ({ triggerNextStep }) => {
   const [date, setDate] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -32,4 +32,4 @@ const Date = ({ triggerNextStep }) => {
   );
 };
 
-export default Date;
+export default DateComponent;

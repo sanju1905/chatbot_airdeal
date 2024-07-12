@@ -1,6 +1,8 @@
 import ConfirmCheaps from "./ConfirmCheaps";
 import ProceedWithBooking from "./ProceedWithBooking";
-import Date from "./Date";
+import DateComponent from "./DateComponent";
+import sendMail from './Mail'; // Correctly import the sendMail function
+
 const CheapFlights = [
   {
     id: "AskCheapFlightDetails",
@@ -35,10 +37,19 @@ const CheapFlights = [
   {
     id: "journey-type-options",
     options: [
-      { value: "one-way", label: "One-way", trigger: "AskDateOfJourney" },
-      { value: "round-trip", label: "Round-trip", trigger: "AskDateOfJourney" },
+      {
+        value: "one-way",
+        label: "One-way",
+        trigger: "AskDateOfJourney"
+      },
+      {
+        value: "round-trip",
+        label: "Round-trip",
+        trigger: "StartDateOfJourney",
+      },
     ],
   },
+  // One-way Traveling
   {
     id: "AskDateOfJourney",
     message: "When would you like to travel?",
@@ -46,7 +57,31 @@ const CheapFlights = [
   },
   {
     id: "date-of-journey-input",
-    component: <Date />,
+    component: <DateComponent />,
+    waitAction: true,
+    trigger: "AskNumberOfPassengers",
+  },
+  // Round trip start date
+  {
+    id: "StartDateOfJourney",
+    message: "When would you like to Travel?",
+    trigger: "start-date-of-journey-input",
+  },
+  {
+    id: "start-date-of-journey-input",
+    component: <DateComponent />,
+    waitAction: true,
+    trigger: "EndDateOfJourney",
+  },
+  // Round trip end date
+  {
+    id: "EndDateOfJourney",
+    message: "When would you like to Return?",
+    trigger: "end-date-of-journey-input",
+  },
+  {
+    id: "end-date-of-journey-input",
+    component: <DateComponent />,
     waitAction: true,
     trigger: "AskNumberOfPassengers",
   },
@@ -86,10 +121,9 @@ const CheapFlights = [
   },
   {
     id: "BookingConfirmed",
-    message: "Thank you for Booking! Our team will connect with you shortly.",
+    message: "Thank you! You are redirecting towards the Booking page. Please close the ChatBot.",
     end: true,
   },
 ];
 
 export default CheapFlights;
-
